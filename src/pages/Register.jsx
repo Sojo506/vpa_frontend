@@ -67,7 +67,7 @@ const Register = () => {
       setAlert({ msg: "Account created, check your email", error: false });
       setShowToast(true);
     } catch (error) {
-      setAlert({ msg: "There was an error", error: true });
+      setAlert({ msg: error.response.data.code, error: true });
       setShowToast(true);
     }
   }
