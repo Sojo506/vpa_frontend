@@ -1,6 +1,6 @@
-import { createContext, useState, useEffect } from "react";
-import axiosClient from "../config/axios";
-import useAuth from "../hooks/useAuth";
+import { createContext, useState, useEffect } from 'react';
+import axiosClient from '../config/axios';
+import useAuth from '../hooks/useAuth';
 
 const PatientContext = createContext();
 
@@ -10,11 +10,11 @@ const PatientProvider = ({ children }) => {
   const { auth, loading } = useAuth();
 
   async function addPatient(patient) {
-    const vpaToken = localStorage.getItem("vpa_token");
+    const vpaToken = localStorage.getItem('vpa_token');
 
     const config = {
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${vpaToken}`,
       },
     };
@@ -31,11 +31,11 @@ const PatientProvider = ({ children }) => {
         setPatients(newPatientState);
         return data;
       } catch (error) {
-        return error.response.data;
+        return { success: false, error: error.response?.data || error.message };
       }
     } else {
       try {
-        const url = "/patient/register";
+        const url = '/patient/register';
         const { data } = await axiosClient.post(url, patient, config);
 
         const { createdAt, updateAta, __v, ...newPatient } = data.patient;
@@ -44,7 +44,7 @@ const PatientProvider = ({ children }) => {
 
         return data;
       } catch (error) {
-        return error.response.data;
+        return { success: false, error: error.response?.data || error.message };
       }
     }
   }
@@ -54,15 +54,15 @@ const PatientProvider = ({ children }) => {
   }
 
   async function deletePatient(id) {
-    const sure = confirm("Do you want to delete it, sure?");
+    const sure = confirm('Do you want to delete it, sure?');
 
     if (!sure) return;
 
-    const vpaToken = localStorage.getItem("vpa_token");
+    const vpaToken = localStorage.getItem('vpa_token');
 
     const config = {
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${vpaToken}`,
       },
     };
@@ -78,35 +78,35 @@ const PatientProvider = ({ children }) => {
       setPatients(newPatientState);
       return data;
     } catch (error) {
-      return error.response.data;
+      return { success: false, error: error.response?.data || error.message };
     }
   }
 
   useEffect(() => {
     (async () => {
       try {
-        const vpaToken = localStorage.getItem("vpa_token");
+        const vpaToken = localStorage.getItem('vpa_token');
 
         if (!vpaToken) return;
 
         const config = {
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${vpaToken}`,
           },
         };
 
-        const url = "/patient/get-all";
+        const url = '/patient/get-all';
         const { data } = await axiosClient(url, config);
 
         setPatients([...patients, ...data.patients]);
 
         return data;
       } catch (error) {
-        return error.response.data;
+        return { success: false, error: error.response?.data || error.message };
       }
     })();
-    
+
     return () => {
       setPatients([]);
     };
